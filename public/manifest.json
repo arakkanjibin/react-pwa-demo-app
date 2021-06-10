@@ -1,6 +1,6 @@
 {
-    "short_name": "Weather App",
-    "name": "Weather App PWA",
+    "short_name": "city weather",
+    "name": "pwa city weather app",
     "icons": [
         {
             "src": "/images/logo.png",

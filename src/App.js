@@ -1,42 +1,46 @@
 import React, { useState } from 'react';
-import { fetchWeather } from './api/fetchWeather';
+import { getCityWeatherDetails } from './api/getWeatherDetails';
 import './App.css';
 const App = () =>{
 
- const [ query, setQuery ] = useState('');
- const [ weather, setWeather ] = useState({});
- const search = async (e) =>{
+ const [ searchParam, setSearchParam ] = useState('');
+ const [ weatherData, setWeatherData ] = useState({});
+ const [ cityNotFound, setCityNotFound ] = useState(false);
+ const keyPressHandle = async (e) =>{
     if(e.key === 'Enter'){
-        const data = await fetchWeather(query);
-        setWeather(data);
-        setQuery('');
-
+        const data = await getCityWeatherDetails(searchParam);
+        console.log('data', data)
+        if(data.error){
+            return setCityNotFound(true);
+        };
+        setCityNotFound(false);
+        setWeatherData(data);
+        setSearchParam('');
     }
  }
 
     return(
-      <div className="main-container">
+      <div className="weather-details">
         <input
         type="text"
         placeholder="search"
-        className="search"
-        value={query}
-        onChange={ (e) => {setQuery(e.target.value)}}
-        onKeyPress={search}
+        className="weather-details__search"
+        value={searchParam}
+        onChange={ (e) => {setSearchParam(e.target.value)}}
+        onKeyPress={keyPressHandle}
         />
-        {weather && weather.main && (
-            <div className="city">
-                <h2 className="city-name">
-                    <span>{weather.name}</span>
-                    <sup>{weather.sys.country}</sup>
-                </h2>
-                <div className="city-temp">
-                    {Math.round(weather.main.temp)}
+        {cityNotFound && <p className="error-msg"> Sorry, city nout found.</p> }
+        {weatherData && weatherData.main && !cityNotFound && (
+            <div className="weather-details__content">
+                <div className="weather-details__city">
+                    <span>{weatherData.name}</span>
+                </div>
+                <div className="weather-details__temp">
+                    {Math.round(weatherData.main.temp)}
                     <sup>&deg;C</sup>
                 </div>
-                <div className="info">
-                <img className="city-icon" src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt={weather.weather[0].description} />
-                <p>{weather.weather[0].description}</p>
+                <div className="weather-details__climate">
+                    <p>{weatherData.weather[0].description}</p>
                 </div>
             </div>
         )}
